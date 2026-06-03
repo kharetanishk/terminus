@@ -1,0 +1,16 @@
+{
+  "name": "@terminus/shared",
+  "type": "module",
+  "private": true,
+  "exports": {
+    ".": "./src/events.ts"
+  },
+  "scripts": {
+    "build": "tsc -b"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "typescript": "^5.8.3",
+    "@repo/typescript-config": "workspace:*"
+  }
+}
