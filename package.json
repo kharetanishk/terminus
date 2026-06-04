@@ -22,6 +22,7 @@
     "packages/*"
   ],
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.100.1",
     "tsx": "^4.22.4"
   }
 }

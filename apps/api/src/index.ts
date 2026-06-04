@@ -1,10 +1,9 @@
-import dotenv from "dotenv";
-dotenv.config();
 import express from "express";
 import cors from "cors";
 import chatRouter from "./routes/chatRoutes.js";
+import { config } from "./config/config.js";
 
-const PORT = process.env.PORT ?? "3001";
+const PORT = config.PORT;
 const app = express();
 
 app.use(express.json());

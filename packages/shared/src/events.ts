@@ -8,25 +8,22 @@ that is happening , the agent stared .. first turn happed , text delta generated
 turn 2 started , result is showcased , agent stopped
 */
 
-export type SSEEvent =
+// events that the PROVIDER emits (Anthropic, Gemini, etc.)
+// these come from the LLM stream
+export type ProviderEvent =
+  | { type: "text_delta"; delta: string }
+  | { type: "tool_start"; name: string; args: Record<string, unknown> };
+
+// events that the AGENT LOOP emits
+// these come from your control logic, not the LLM
+export type AgentEvent =
   | { type: "agent_start" }
-  | { type: "turn_start"; turn: number } // turn number so UI knows which turn
-  | { type: "text_delta"; delta: string } // just the fragment, nothing else
-  | {
-      type: "tool_start";
-      name: string; // which tool
-      args: Record<string, unknown>;
-    } // what args the LLM passed
-  | {
-      type: "tool_end";
-      name: string; // which tool finished
-      result: string; // what it returned
-      isError: boolean;
-    } // did it fail
+  | { type: "turn_start"; turn: number }
+  | { type: "tool_end"; name: string; result: string; isError: boolean }
   | { type: "turn_end"; turn: number; durationMs: number }
   | { type: "agent_end" }
-  | {
-      type: "error";
-      message: string;
-      errorType: string; //from where the error came from like ky ftt gya
-    };
+  | { type: "error"; message: string; errorType: string };
+
+// everything the browser can receive over SSE
+// = both combined
+export type SSEEvent = ProviderEvent | AgentEvent;
