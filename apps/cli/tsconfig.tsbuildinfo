@@ -1,0 +1,1 @@
+{"root":["./src/index.ts","./src/commands/agent.ts","./src/commands/models.ts","./src/commands/providers/index.ts","./src/commands/providers/list.ts","./src/commands/providers/login.ts","./src/commands/providers/logout.ts","./src/commands/providers/setprovider.ts","./src/utils/config.ts"],"version":"5.9.2"}

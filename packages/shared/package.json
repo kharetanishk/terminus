@@ -3,7 +3,10 @@
   "type": "module",
   "private": true,
   "exports": {
-    ".": "./src/events.ts"
+    ".": {
+      "bun": "./src/events.ts",
+      "default": "./dist/events.js"
+    }
   },
   "scripts": {
     "build": "tsc -b"

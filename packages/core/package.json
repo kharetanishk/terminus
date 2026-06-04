@@ -4,11 +4,26 @@
   "type": "module",
   "private": true,
   "exports": {
-    ".": "./src/index.ts",
-    "./types": "./src/types.ts",
-    "./loop": "./src/loop.ts",
-    "./providers": "./src/providers/index.ts",
-    "./tools": "./src/tools/index.ts"
+    ".": {
+      "bun": "./src/index.ts",
+      "default": "./dist/index.js"
+    },
+    "./types": {
+      "bun": "./src/types.ts",
+      "default": "./dist/types.js"
+    },
+    "./loop": {
+      "bun": "./src/loop.ts",
+      "default": "./dist/loop.js"
+    },
+    "./providers": {
+      "bun": "./src/providers/index.ts",
+      "default": "./dist/providers/index.js"
+    },
+    "./tools": {
+      "bun": "./src/tools/index.ts",
+      "default": "./dist/tools/index.js"
+    }
   },
   "scripts": {
     "build": "tsc -b",
