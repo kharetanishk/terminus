@@ -72,7 +72,8 @@ export async function* streamAnthropic(
   for await (const chunk of stream) {
     if (
       chunk.type === "content_block_delta" &&
-      chunk.delta.type === "text_delta"
+      chunk.delta.type === "text_delta" &&
+      chunk.delta.text
     ) {
       yield { type: "text_delta", delta: chunk.delta.text };
     }

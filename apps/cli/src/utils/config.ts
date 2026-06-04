@@ -16,7 +16,7 @@ interface TerminusConfig {
 }
 
 const DEFAULT_ACTIVE_MODELS: Record<string, string> = {
-  anthropic: "claude-sonnet-4-5",
+  claude: "claude-sonnet-4-5",
   gemini: "gemini-2.0-flash",
 };
 
@@ -34,7 +34,10 @@ function getConfig(): TerminusConfig {
     return {
       providers: parsed.providers ?? {},
       activeProvider: parsed.activeProvider ?? null,
-      activeModels: { ...DEFAULT_ACTIVE_MODELS, ...(parsed.activeModels ?? {}) },
+      activeModels: {
+        ...DEFAULT_ACTIVE_MODELS,
+        ...(parsed.activeModels ?? {}),
+      },
     };
   } catch {
     return {
@@ -93,7 +96,7 @@ export function listProviders(): Array<{
   active: boolean;
 }> {
   const config = getConfig();
-  const known = ["anthropic", "gemini"];
+  const known = ["claude", "gemini"];
   const configured = Object.keys(config.providers);
   const all = [...new Set([...known, ...configured])];
 
@@ -110,7 +113,9 @@ export function getActiveModel(): string | null {
   const config = getConfig();
   const provider = config.activeProvider;
   if (!provider) return null;
-  return config.activeModels[provider] ?? DEFAULT_ACTIVE_MODELS[provider] ?? null;
+  return (
+    config.activeModels[provider] ?? DEFAULT_ACTIVE_MODELS[provider] ?? null
+  );
 }
 
 export function setActiveModel(provider: string, model: string): void {
