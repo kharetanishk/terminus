@@ -1,4 +1,4 @@
-import { streamAnthropic } from "../providers/anthropic.js";
+import { streamProvider } from "../providers/index.js";
 import { findTool, toolSchemas } from "./tools/index.js";
 import { config } from "../config/config.js";
 import type { AgentEvent, ProviderEvent, SSEEvent } from "@terminus/shared";
@@ -38,7 +38,7 @@ export async function* runAgentLoop(
     let assistantText = "";
 
     // stream from Anthropic — only yields text_delta and tool_start
-    for await (const event of streamAnthropic(
+    for await (const event of streamProvider(
       SYSTEM_PROMPT,
       messages,
       toolSchemas,
