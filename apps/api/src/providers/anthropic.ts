@@ -4,11 +4,6 @@ import type { ProviderEvent } from "@terminus/shared";
 
 const client = new Anthropic({ apiKey: config.ANTHROPIC_API_KEY });
 
-// ─────────────────────────────────────────────
-// Internal message types
-// These are YOUR types — what the agent loop works with
-// ─────────────────────────────────────────────
-
 export interface UserMessage {
   role: "user";
   content: string;
@@ -44,26 +39,20 @@ export interface ToolSchema {
   };
 }
 
-// ─────────────────────────────────────────────
-// Convert YOUR messages → Anthropic format
-// This is the translation layer
-// ─────────────────────────────────────────────
-
 function toAnthropicMessages(messages: Message[]): Anthropic.MessageParam[] {
   const result: Anthropic.MessageParam[] = [];
 
   for (const msg of messages) {
     if (msg.role === "user") {
-      result.push({
-        role: "user",
-        content: msg.content,
-      });
+      result.push({ role: "user", content: msg.content });
     } else if (msg.role === "assistant") {
-      // assistant message may have text, tool calls, or both
-      const content: Anthropic.ContentBlockParam[] = [];
+      const content: Anthropic.MessageParam["content"] = [];
 
       if (msg.text) {
-        content.push({ type: "text", text: msg.text });
+        content.push({
+          type: "text",
+          text: msg.text,
+        } as Anthropic.TextBlockParam);
       }
 
       for (const tc of msg.toolCalls) {
@@ -72,12 +61,11 @@ function toAnthropicMessages(messages: Message[]): Anthropic.MessageParam[] {
           id: tc.id,
           name: tc.name,
           input: tc.args,
-        });
+        } as Anthropic.ToolUseBlockParam);
       }
 
       result.push({ role: "assistant", content });
     } else if (msg.role === "toolResult") {
-      // tool results go back as role: "user" with type: "tool_result"
       result.push({
         role: "user",
         content: [
@@ -94,7 +82,6 @@ function toAnthropicMessages(messages: Message[]): Anthropic.MessageParam[] {
   return result;
 }
 
-// Convert YOUR tool schemas → Anthropic format
 function toAnthropicTools(tools: ToolSchema[]): Anthropic.Tool[] {
   return tools.map((t) => ({
     name: t.name,
@@ -102,12 +89,6 @@ function toAnthropicTools(tools: ToolSchema[]): Anthropic.Tool[] {
     input_schema: t.parameters,
   }));
 }
-
-// ─────────────────────────────────────────────
-// The streaming function
-// Emits only ProviderEvents — text_delta and tool_start
-// Everything else (turn tracking, tool execution) is the loop's job
-// ─────────────────────────────────────────────
 
 export async function* streamAnthropic(
   systemPrompt: string,
@@ -122,23 +103,26 @@ export async function* streamAnthropic(
     tools: toAnthropicTools(tools),
   });
 
-  for await (const event of stream) {
+  // stream text live as it arrives
+  for await (const chunk of stream) {
     if (
-      event.type === "content_block_delta" &&
-      event.delta.type === "text_delta"
+      chunk.type === "content_block_delta" &&
+      chunk.delta.type === "text_delta"
     ) {
-      yield { type: "text_delta", delta: event.delta.text };
+      yield { type: "text_delta", delta: chunk.delta.text };
     }
+  }
 
-    if (event.type === "content_block_stop") {
-      const block = stream.currentMessage?.content[event.index];
-      if (block?.type === "tool_use") {
-        yield {
-          type: "tool_start",
-          name: block.name,
-          args: block.input as Record<string, unknown>,
-        };
-      }
+  // after streaming completes, emit tool calls with fully assembled args
+  const finalMessage = await stream.finalMessage();
+
+  for (const block of finalMessage.content) {
+    if (block.type === "tool_use") {
+      yield {
+        type: "tool_start",
+        name: block.name,
+        args: block.input as Record<string, unknown>,
+      };
     }
   }
 }
