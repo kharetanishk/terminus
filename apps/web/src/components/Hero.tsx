@@ -2,10 +2,10 @@ import { useEffect, useState } from "react";
 import "./Hero.css";
 
 interface HeroProps {
-  onStart: () => void;
+  onChat: () => void;
 }
 
-export function Hero({ onStart }: HeroProps) {
+export function Hero({ onChat }: HeroProps) {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
@@ -43,7 +43,7 @@ export function Hero({ onStart }: HeroProps) {
             <span className="hero-title-accent">Understood.</span>
           </h1>
 
-          <button className="hero-cta" onClick={onStart}>
+          <button type="button" className="hero-cta" onClick={onChat}>
             <span className="hero-cta-prefix">$</span>
             run terminus
             <span className="hero-cta-arrow">→</span>

@@ -8,6 +8,7 @@
     "start": "node dist/index.js"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.100.0",
     "@terminus/core": "workspace:*",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",

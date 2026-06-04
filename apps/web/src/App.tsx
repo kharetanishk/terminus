@@ -1,17 +1,19 @@
 import { useState } from "react";
 import { Hero } from "./components/Hero";
-import { Terminal } from "./components/Terminal";
+import { Chat } from "./components/Chat";
 import "./index.css";
 
+type View = "hero" | "chat";
+
 export default function App() {
-  const [started, setStarted] = useState(false);
+  const [view, setView] = useState<View>("hero");
 
   return (
     <main className="app">
-      {!started ? (
-        <Hero onStart={() => setStarted(true)} />
+      {view === "hero" ? (
+        <Hero onChat={() => setView("chat")} />
       ) : (
-        <Terminal onBack={() => setStarted(false)} />
+        <Chat onBack={() => setView("hero")} />
       )}
     </main>
   );

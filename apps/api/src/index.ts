@@ -1,33 +1,43 @@
 import express from "express";
 import cors from "cors";
 import chatRouter from "./routes/chatRoutes.js";
+import messageRouter from "./routes/messageRoutes.js";
 import { config } from "./config/config.js";
 
 const PORT = config.PORT;
-const ALLOWED_ORIGIN = "http://localhost:5173";
+const ALLOWED_ORIGIN = config.ALLOWED_ORIGIN;
+
+const corsOptions = {
+  origin: ALLOWED_ORIGIN,
+  methods: ["GET", "POST", "OPTIONS"],
+  allowedHeaders: ["Content-Type"],
+  optionsSuccessStatus: 204,
+};
+
 const app = express();
 
-app.use(express.json());
+// CORS first — preflight must succeed before any other middleware
+app.use(cors(corsOptions));
 
-// Express 5: bare "*" is invalid in path-to-regexp v8; use a regex catch-all
-app.options(/.*/, (_req, res) => {
+// Express 5: named splat for catch-all OPTIONS (regex /.*/ does not match routes)
+app.options("/{*path}", cors(corsOptions));
+
+// Fallback: ensure every response (including errors) has CORS headers
+app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", ALLOWED_ORIGIN);
   res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
-  res.setHeader("Access-Control-Max-Age", "86400");
-  res.sendStatus(204);
+  if (req.method === "OPTIONS") {
+    res.setHeader("Access-Control-Max-Age", "86400");
+    return res.sendStatus(204);
+  }
+  next();
 });
 
-app.use(
-  cors({
-    origin: ALLOWED_ORIGIN,
-    methods: ["GET", "POST", "OPTIONS"],
-    allowedHeaders: ["Content-Type"],
-  }),
-);
+app.use(express.json());
 
-//routes
 app.use("/api/v1", chatRouter);
+app.use("/api/v1", messageRouter);
 
 app.listen(PORT, () => {
   console.log(`the api is listening in port : ${PORT}`);
