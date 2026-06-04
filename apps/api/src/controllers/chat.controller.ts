@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
+import { runAgentLoop } from "@terminus/core";
 import { userMessageValidation } from "../validation/chat.validation.js";
-import { runAgentLoop } from "../agent/loop.js";
+import { config } from "../config/config.js";
 
 export async function chatController(req: Request, res: Response) {
   const parsed = userMessageValidation.safeParse(req.body);
@@ -11,8 +12,7 @@ export async function chatController(req: Request, res: Response) {
 
   const { message: userMessage } = parsed.data;
 
-  // open SSE connection to the browser
-  res.setHeader("Access-Control-Allow-Origin", "http://localhost:5173");
+  res.setHeader("Access-Control-Allow-Origin", config.ALLOWED_ORIGIN);
   res.setHeader("Content-Type", "text/event-stream");
   res.setHeader("Cache-Control", "no-cache");
   res.setHeader("Connection", "keep-alive");
@@ -23,8 +23,13 @@ export async function chatController(req: Request, res: Response) {
   };
 
   try {
-    // run agent loop and forward every event to the browser
-    for await (const event of runAgentLoop(userMessage)) {
+    for await (const event of runAgentLoop(userMessage, {
+      provider: config.PROVIDER,
+      apiKey: config.API_KEY,
+      modelId: config.MODEL_ID,
+      workingDir: config.WORKING_DIR,
+      maxIterations: config.MAX_ITERATIONS,
+    })) {
       send(event);
     }
   } catch (error: unknown) {

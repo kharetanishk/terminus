@@ -8,8 +8,7 @@
     "start": "node dist/index.js"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.100.1",
-    "@google/genai": "^2.8.0",
+    "@terminus/core": "workspace:*",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
