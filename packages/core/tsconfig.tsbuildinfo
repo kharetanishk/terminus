@@ -1,0 +1,1 @@
+{"root":["./src/index.ts","./src/loop.ts","./src/types.ts","./src/providers/anthropic.ts","./src/providers/gemini.ts","./src/providers/index.ts","./src/tools/bash.ts","./src/tools/index.ts","./src/tools/list-dir.ts","./src/tools/read-file.ts","./src/tools/write-file.ts"],"version":"5.9.2"}

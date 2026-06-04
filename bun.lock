@@ -58,6 +58,20 @@
         "vite": "^8.0.12",
       },
     },
+    "packages/core": {
+      "name": "@terminus/core",
+      "version": "0.1.0",
+      "dependencies": {
+        "@anthropic-ai/sdk": "^0.100.0",
+        "@google/genai": "^2.8.0",
+        "@terminus/shared": "workspace:*",
+      },
+      "devDependencies": {
+        "@repo/typescript-config": "workspace:*",
+        "@types/node": "^22.15.3",
+        "typescript": "^5.8.3",
+      },
+    },
     "packages/eslint-config": {
       "name": "@repo/eslint-config",
       "version": "0.0.0",
@@ -313,6 +327,8 @@
     "@stablelib/base64": ["@stablelib/base64@1.0.1", "", {}, "sha512-1bnPQqSxSuc3Ii6MhBysoWCg58j97aUjuCSZrGSmDxNqtytIi0k8utUenAwTZN4V5mXXYGsVUI9zeBqy+jBOSQ=="],
 
     "@terminus/api": ["@terminus/api@workspace:apps/api"],
+
+    "@terminus/core": ["@terminus/core@workspace:packages/core"],
 
     "@terminus/shared": ["@terminus/shared@workspace:packages/shared"],
 
