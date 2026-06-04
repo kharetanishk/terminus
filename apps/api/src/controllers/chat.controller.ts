@@ -12,6 +12,7 @@ export async function chatController(req: Request, res: Response) {
   const { message: userMessage } = parsed.data;
 
   // open SSE connection to the browser
+  res.setHeader("Access-Control-Allow-Origin", "http://localhost:5173");
   res.setHeader("Content-Type", "text/event-stream");
   res.setHeader("Cache-Control", "no-cache");
   res.setHeader("Connection", "keep-alive");
